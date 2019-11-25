@@ -71,7 +71,7 @@ class MessagesPanel(wx.Panel):
         self.parent.Layout()
 
     def onCollapsePanel(self, event):
-        self.Layout()
+        self.mainSizer.Layout()
         self.parent.Layout()
 
     def clear(self, event=None):
