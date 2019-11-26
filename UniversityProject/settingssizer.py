@@ -8,6 +8,30 @@ class ChoiceMode(Enum):
     multiple = auto()
     notMoreThan = auto()
 
+class LRUCache:
+    __items = []
+    __maxSize = 1
+
+    def SetMaxSize(self, size):
+        self.__maxSize = size
+        while len(self) > self.__maxSize:
+            del self.__items[0]
+
+    def __len__(self):
+        return len(self.__items)
+
+    def Add(self, item):
+        if  len(self) >= self.__maxSize:
+            del self.__items[0]
+        self.__items.append(item)
+
+    def GetValues(self):
+        return self.__items
+
+    def __iter__(self):
+        return iter(self.__items)
+
+
 class SettingsSizer(wx.StaticBoxSizer):
 
     __verticalSpacer = 7
@@ -28,7 +52,6 @@ class SettingsSizer(wx.StaticBoxSizer):
         self.selectedBoxes = []
 
         self.__checkInit()
-
 
     def __checkInit(self):
         if self.orient == wx.VERTICAL:
@@ -54,35 +77,6 @@ class SettingsSizer(wx.StaticBoxSizer):
             self.Add(boxSizer)
             if row + 1 < rowNumber: self.AddSpacer(self.__verticalSpacer if state == wx.VERTICAL else self.__horizontalSpacer)
 
-        # columnNumber = self.size[0]
-        # rowNumber = self.size[1]
-        # if self.orient == wx.VERTICAL:
-        #     for row in range(rowNumber):
-        #         boxSizer = wx.BoxSizer(wx.HORIZONTAL)
-        #         for column in range(columnNumber):
-        #             currentCell = row*columnNumber+column
-        #             if currentCell >= len(self.choices):
-        #                 break
-        #             checkBox = wx.CheckBox(self.panel, label=self.choices[currentCell])
-        #             self.checkBoxes.append(checkBox)
-        #             checkBox.Bind(wx.EVT_CHECKBOX, self.onCheck)
-        #             boxSizer.Add(checkBox)
-        #         self.Add(boxSizer)
-        # else:
-        #     print("HERE")
-        #     for column in range(columnNumber):
-        #         boxSizer = wx.BoxSizer(wx.VERTICAL)
-        #         for row in range(rowNumber):
-        #             currentCell = column * rowNumber + row
-        #             if currentCell >= len(self.choices):
-        #                 break
-        #             checkBox = wx.CheckBox(self.panel, label=self.choices[currentCell])
-        #             self.checkBoxes.append(checkBox)
-        #             checkBox.Bind(wx.EVT_CHECKBOX, self.onCheck)
-        #             boxSizer.Add(checkBox)
-        #         self.Add(boxSizer)
-
-
     def __onCheck(self, event):
         checkedBox = event.GetEventObject()
         if self.__mode == ChoiceMode.single:
@@ -90,8 +84,20 @@ class SettingsSizer(wx.StaticBoxSizer):
                 box.SetValue(False)
             checkedBox.SetValue(True)
         if self.__mode == ChoiceMode.notMoreThan:
-            return
+            if checkedBox in self.selectedBoxes:
+                self.selectedBoxes.remove(checkedBox)
+            else:
+                self.selectedBoxes.append(checkedBox)
+            self.__toggleHiddenIfNeeded()
 
+    def __toggleHiddenIfNeeded(self):
+        boxesStates = [True if box in self.selectedBoxes else False for box in self.checkBoxes]
+        if len(self.selectedBoxes) >= self.__maxSelectionNumber:
+            for index, item in enumerate(boxesStates):
+                self.checkBoxes[index].Enable(item)
+        else:
+            for item in self.checkBoxes:
+                item.Enable(True)
 
     def GetValue(self):
         return list(map(lambda box: box.GetLabel(), list(filter(lambda box: box.GetValue() == True, self.checkBoxes))))
