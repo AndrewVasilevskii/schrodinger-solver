@@ -1,58 +1,58 @@
-#
-# import wx
-# from mainFrame import MainFrame
-# import multiprocessing
-#
-# if __name__ == '__main__':
-#
-#     multiprocessing.freeze_support()
-#     app = wx.App()
-#     # size = wx.Size(945, 685)
-#     size = wx.Size(745, 750)
-#     pos = wx.Point(100, 100)
-#     frame = MainFrame(None, title='University work', size=size, pos=pos, style=wx.DEFAULT_FRAME_STYLE )
-#     frame.Show()
-#     app.MainLoop()
 
 import wx
+from mainFrame import MainFrame
+import multiprocessing
 
-class MyFrame(wx.Frame):
-    def __init__(self, *args, **kwds):
-        kwds["style"] = wx.DEFAULT_FRAME_STYLE
-        wx.Frame.__init__(self, *args, **kwds)
-        self.window_1 = wx.SplitterWindow(self, wx.ID_ANY, style=wx.SP_LIVE_UPDATE|wx.SP_NOBORDER)
-        self.window_1_pane_1 = wx.Panel(self.window_1, wx.ID_ANY)
-        self.window_1_pane_1.SetMinSize((300,200))
-        self.window_1_pane_2 = wx.Panel(self.window_1, wx.ID_ANY)
-        # self.window_1_pane_2.SetMinSize((300,150))
-        self.window_1.SetMinimumPaneSize(100)
+if __name__ == '__main__':
 
-        self.window_1.SetSashGravity(1)
-
-
-        self.__set_properties()
-        self.__do_layout()
-
-    def __set_properties(self):
-        self.SetTitle("frame_1")
-        self.window_1_pane_1.SetBackgroundColour(wx.Colour(255, 255, 0))
-        self.window_1_pane_2.SetBackgroundColour(wx.Colour(50, 153, 204))
-
-    def __do_layout(self):
-        sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        self.window_1.SplitHorizontally(self.window_1_pane_1, self.window_1_pane_2)
-        sizer_1.Add(self.window_1, 1, wx.EXPAND, 0)
-        self.SetSizer(sizer_1)
-        # sizer_1.Fit(self)
-        self.Layout()
-
-if __name__ == "__main__":
+    multiprocessing.freeze_support()
     app = wx.App()
-    # wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None, wx.ID_ANY, "")
-    # app.SetTopWindow(frame_1)
-    frame_1.Show()
+    # size = wx.Size(945, 685)
+    size = wx.Size(745, 750)
+    pos = wx.Point(100, 100)
+    frame = MainFrame(None, title='University work', size=size, pos=pos, style=wx.DEFAULT_FRAME_STYLE )
+    frame.Show()
     app.MainLoop()
+
+# import wx
+#
+# class MyFrame(wx.Frame):
+#     def __init__(self, *args, **kwds):
+#         kwds["style"] = wx.DEFAULT_FRAME_STYLE
+#         wx.Frame.__init__(self, *args, **kwds)
+#         self.window_1 = wx.SplitterWindow(self, wx.ID_ANY, style=wx.SP_LIVE_UPDATE|wx.SP_NOBORDER)
+#         self.window_1_pane_1 = wx.Panel(self.window_1, wx.ID_ANY)
+#         self.window_1_pane_1.SetMinSize((300,200))
+#         self.window_1_pane_2 = wx.Panel(self.window_1, wx.ID_ANY)
+#         # self.window_1_pane_2.SetMinSize((300,150))
+#         self.window_1.SetMinimumPaneSize(100)
+#
+#         self.window_1.SetSashGravity(1)
+#
+#
+#         self.__set_properties()
+#         self.__do_layout()
+#
+#     def __set_properties(self):
+#         self.SetTitle("frame_1")
+#         self.window_1_pane_1.SetBackgroundColour(wx.Colour(255, 255, 0))
+#         self.window_1_pane_2.SetBackgroundColour(wx.Colour(50, 153, 204))
+#
+#     def __do_layout(self):
+#         sizer_1 = wx.BoxSizer(wx.VERTICAL)
+#         self.window_1.SplitHorizontally(self.window_1_pane_1, self.window_1_pane_2)
+#         sizer_1.Add(self.window_1, 1, wx.EXPAND, 0)
+#         self.SetSizer(sizer_1)
+#         # sizer_1.Fit(self)
+#         self.Layout()
+#
+# if __name__ == "__main__":
+#     app = wx.App()
+#     # wx.InitAllImageHandlers()
+#     frame_1 = MyFrame(None, wx.ID_ANY, "")
+#     # app.SetTopWindow(frame_1)
+#     frame_1.Show()
+#     app.MainLoop()
 #
 
 # import wx

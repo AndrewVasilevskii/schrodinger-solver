@@ -34,6 +34,9 @@ class MainFrame(wx.Frame):
         tempSizer.Add(self.textField)
         tempSizer.AddSpacer(10)
         tempSizer.Add(self.clearBut)
+        from settingssizer import SettingsSizer
+        tempSizer.Add(SettingsSizer(parent=panel, label="BOX", choices=("box1", "box2","box3", "box4","box5", "box6"), size=(2,5), orient=wx.HORIZONTAL))
+
 
         mainSizer.AddSpacer(4)
         mainSizer.Add(tempSizer,0)
