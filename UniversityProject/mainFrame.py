@@ -7,15 +7,12 @@ from settingssizer import SettingsSizer, ChoiceMode
 class MainFrame(wx.Frame):
 
     def __init__(self, *args, **kw):
-        super(MainFrame, self).__init__(*args, **kw)
+        super().__init__(*args, **kw)
 
         icon = wx.Icon('bitmaps/icon.ico', wx.BITMAP_TYPE_ICO)
         self.SetIcon(icon)
 
         self.splitterWindow = splitterWindow = wx.SplitterWindow(self, wx.ID_ANY, style=wx.SP_NO_XP_THEME)
-        splitterWindow.SetSashSize(10)
-        # print(splitterWindow.)
-        print(splitterWindow.GetSashSize())
         splitterWindow.SetSashGravity(0)
         splitterWindow.SetMinimumPaneSize(150)
         mainSizer = wx.BoxSizer()
@@ -40,8 +37,8 @@ class MainFrame(wx.Frame):
         tempSizer.Add(self.clearBut)
 
         from settingssizer import SettingsSizer
-        setSizer = SettingsSizer(parent=canvasPanel, label="BOX", choices=("box1", "box2","box3", "box4","box5", "box6"), size=(2,3), orient=wx.HORIZONTAL)
-        setSizer.SetMaxSelectionNumber(3)
+        setSizer = SettingsSizer(parent=canvasPanel, label="BOX", choices=("box1", "box2","box3", "box4","box5", "box6"), size=(6,1), orient=wx.HORIZONTAL)
+        # setSizer.SetMaxSelectionNumber(3)
         setSizer.SetSelectionMode(ChoiceMode.notMoreThan)
         tempSizer.Add(setSizer)
 
@@ -122,6 +119,9 @@ class MainFrame(wx.Frame):
         #
         self.modelMenu = modelMenu = wx.Menu()
         modelMenu.AppendSeparator()
+        test = wx.MenuItem(text='Test', id=1543)
+        modelMenu.Append(test)
+        self.Bind(wx.EVT_MENU, self.onModel, test)
         self.solveMenu = solveMenu = wx.Menu()
         solveMenu.AppendSeparator()
         self.canvasMenu = canvasMenu = wx.Menu()
@@ -159,6 +159,10 @@ class MainFrame(wx.Frame):
     def onExit(self, event):
         import sys
         sys.exit()
+
+    def onModel(self, event):
+        from settings import Settings
+        Settings(None ,size=(200,200)).Show()
 
     def onAbout(self, event):
         message = 'Program for a university project.\nBy Andrew Vasilevskii.'
