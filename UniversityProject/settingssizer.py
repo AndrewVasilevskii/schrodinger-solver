@@ -10,25 +10,27 @@ class ChoiceMode(Enum):
 
 class SettingsSizer(wx.StaticBoxSizer):
 
-    def __init__(self, parent, label, size:tuple, choices, orient, mode:ChoiceMode=ChoiceMode.single):
+    __verticalSpacer = 7
+    __horizontalSpacer = 10
+    __mode = ChoiceMode.single
+    __maxSelectionNumber = 1
+
+    def __init__(self, parent, label, size:tuple, choices, orient=wx.VERTICAL):
         if not isinstance(size, (tuple, list)):
             raise TypeError(WRONG_SIZE)
-        if not isinstance(mode, ChoiceMode):
-            raise TypeError(WRONG_MODE)
         self.panel = parent
         self.boxLabel = label
         self.size= size
         self.choices = choices
-        self.mode = mode
         self.orient = orient
         super(SettingsSizer, self).__init__(orient=self.orient, parent=self.panel, label=self.boxLabel)
         self.checkBoxes = []
         self.selectedBoxes = []
 
-        self.checkInit()
+        self.__checkInit()
 
 
-    def checkInit(self):
+    def __checkInit(self):
         if self.orient == wx.VERTICAL:
             columnNumber= self.size[0]
             rowNumber = self.size[1]
@@ -46,9 +48,12 @@ class SettingsSizer(wx.StaticBoxSizer):
                     break
                 checkBox = wx.CheckBox(self.panel, label=self.choices[currentCell])
                 self.checkBoxes.append(checkBox)
-                checkBox.Bind(wx.EVT_CHECKBOX, self.onCheck)
+                checkBox.Bind(wx.EVT_CHECKBOX, self.__onCheck)
                 boxSizer.Add(checkBox)
+                if column + 1 < columnNumber: boxSizer.AddSpacer(self.__horizontalSpacer if state == wx.VERTICAL else self.__verticalSpacer)
             self.Add(boxSizer)
+            if row + 1 < rowNumber: self.AddSpacer(self.__verticalSpacer if state == wx.VERTICAL else self.__horizontalSpacer)
+
         # columnNumber = self.size[0]
         # rowNumber = self.size[1]
         # if self.orient == wx.VERTICAL:
@@ -78,15 +83,29 @@ class SettingsSizer(wx.StaticBoxSizer):
         #         self.Add(boxSizer)
 
 
-
-    def onCheck(self, event):
+    def __onCheck(self, event):
         checkedBox = event.GetEventObject()
-        if self.mode == ChoiceMode.single:
+        if self.__mode == ChoiceMode.single:
             for box in self.checkBoxes:
                 box.SetValue(False)
             checkedBox.SetValue(True)
-        if self.mode == ChoiceMode.notMoreThan:
+        if self.__mode == ChoiceMode.notMoreThan:
+            return
 
 
     def GetValue(self):
         return list(map(lambda box: box.GetLabel(), list(filter(lambda box: box.GetValue() == True, self.checkBoxes))))
+
+    def SetVerticalSpacer(self, number):
+        self.__verticalSpacer = number
+
+    def SetHorizontalSpacer(self, number):
+        self.__horizontalSpacer = number
+
+    def SetSelectionMode(self, mode:ChoiceMode):
+        if not isinstance(mode, ChoiceMode):
+            raise TypeError(WRONG_MODE)
+        self.__mode = mode
+
+    def SetMaxSelectionNumber(self, number):
+        self.__maxSelectionNumber = number

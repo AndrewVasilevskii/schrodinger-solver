@@ -35,7 +35,8 @@ class MainFrame(wx.Frame):
         tempSizer.AddSpacer(10)
         tempSizer.Add(self.clearBut)
         from settingssizer import SettingsSizer
-        tempSizer.Add(SettingsSizer(parent=panel, label="BOX", choices=("box1", "box2","box3", "box4","box5", "box6"), size=(2,5), orient=wx.HORIZONTAL))
+        setSizer = SettingsSizer(parent=panel, label="BOX", choices=("box1", "box2","box3", "box4","box5", "box6"), size=(2,3), orient=wx.HORIZONTAL)
+        tempSizer.Add(setSizer)
 
 
         mainSizer.AddSpacer(4)
