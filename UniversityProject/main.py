@@ -13,3 +13,4 @@ if __name__ == '__main__':
     frame = MainFrame(None, title='University work', size=size, pos=pos, style=wx.DEFAULT_FRAME_STYLE )
     frame.Show()
     app.MainLoop()
+

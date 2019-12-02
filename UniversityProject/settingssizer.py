@@ -1,5 +1,6 @@
 import wx
 from enum import Enum, auto
+
 WRONG_SIZE = "size attribute should have the following structure <tuple(int, int)> "
 WRONG_MODE = "mode attribute must be set to an instance of <enum \'ChoiceMode\'> '"
 

@@ -162,7 +162,7 @@ class MainFrame(wx.Frame):
 
     def onModel(self, event):
         from settings import Settings
-        Settings(None ,size=(200,200)).Show()
+        Settings(None ,size=(350,200)).Show()
 
     def onAbout(self, event):
         message = 'Program for a university project.\nBy Andrew Vasilevskii.'
