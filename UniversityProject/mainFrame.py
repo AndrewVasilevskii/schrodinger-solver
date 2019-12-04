@@ -38,7 +38,7 @@ class MainFrame(wx.Frame):
 
         from settingssizer import SettingsSizer
         setSizer = SettingsSizer(parent=canvasPanel, label="BOX", choices=("box1", "box2","box3", "box4","box5", "box6"), size=(6,1), orient=wx.HORIZONTAL)
-        # setSizer.SetMaxSelectionNumber(3)
+        setSizer.SetMaxSelectionNumber(3)
         setSizer.SetSelectionMode(ChoiceMode.notMoreThan)
         tempSizer.Add(setSizer)
 

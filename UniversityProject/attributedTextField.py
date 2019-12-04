@@ -17,7 +17,7 @@ class AttributedTextField(rt.RichTextCtrl):
         self.indexText = indexText
         self.indexStyle = indexStyle
 
-        self.baseFont = wx.Font(pointSize = 14, family = wx.DEFAULT,
+        self.baseFont = wx.Font(pointSize = 12, family = wx.DEFAULT,
                style = wx.NORMAL, weight = wx.NORMAL,
                faceName = 'Consolas')
         self.indexFont = wx.Font(pointSize = 10, family = wx.DEFAULT,
@@ -31,6 +31,7 @@ class AttributedTextField(rt.RichTextCtrl):
         self.SetFont(self.baseFont)
         self.setIndex()
         self.EnableVerticalScrollbar(False)
+        # self.SetBackgroundColour(self.parent.GetBackgroundColour())
 
     def getTextSize(self):
         dcBase = wx.MemoryDC()
@@ -42,7 +43,7 @@ class AttributedTextField(rt.RichTextCtrl):
 
     def setIndex(self):
         if self.indexStyle != IndexStyle.none:
-            baseTextWithIndex = self.baseText + " " + self.indexText
+            baseTextWithIndex = self.baseText + self.indexText
             textEffect = wx.TEXT_ATTR_EFFECT_SUPERSCRIPT if self.indexStyle == IndexStyle.super else wx.TEXT_ATTR_EFFECT_SUBSCRIPT
             attr = wx.richtext.RichTextAttr()
             attr.SetTextEffects(textEffect)
