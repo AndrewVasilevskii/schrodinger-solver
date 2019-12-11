@@ -12,24 +12,27 @@ class Settings(wx.Frame):
         self.mainSizer = wx.BoxSizer(wx.VERTICAL)
 
         ## DONORS
-        self.donorSizer = SS.SettingsSizer(self.panel, label="Number of donors: ", size=(3, 1),
-                                      choices=("0 donors", "1 donor", "2 donors"))
-        self.mainSizer.Add(self.donorSizer, 1, wx.EXPAND)
+        # self.donorSizer = SS.SettingsSizer(self.panel, label="Number of donors: ", size=(3, 1),
+        #                               choices=range(3))
+        self.donorSizer = wx.RadioBox(self.panel, label="Number of donors: ", choices=("0", "1", "2"))
+        self.mainSizer.Add(self.donorSizer)
 
         ## GATES
         self.gatesBox = wx.StaticBox(self.panel, label="Gates: ")
-        self.gatesBoxSizer = wx.StaticBoxSizer(self.gatesBox, wx.VERTICAL)
-        self.gate = SS.SettingsSizer(self.panel, label="Number of gates: ", size=(2,2), choices=("0 gates", "1 gate", "2 gates", "3 gates"))
-        self.gateForm = SS.SettingsSizer(self.panel, label="Gate form: ", size=(1,3), choices=("disc", "strip", "rectangle"))
-        self.gatesBoxSizer.Add(self.gate, 1, wx.EXPAND)
-        self.gatesBoxSizer.Add(self.gateForm, 1, wx.EXPAND)
+        self.gatesBoxSizer = wx.StaticBoxSizer(self.gatesBox, wx.HORIZONTAL)
+        self.gate = SS.SettingsSizer(self.panel, label="Number: ", size=(1,4), choices=range(4))
+        # self.gate = wx.RadioBox(self.panel, label="Number: ", choices=("0", "1", "2", "3"), style=wx.RA_SPECIFY_ROWS | wx.ALIGN_LEFT)
+        # self.gateForm = SS.SettingsSizer(self.panel, label="Form: ", size=(1,3), choices=("disc", "strip", "rectangle"))
+        self.gateForm = wx.RadioBox(self.panel, label="Form: ", choices=("disc", "strip", "rectangle"), style=wx.RA_SPECIFY_ROWS)
+        self.gatesBoxSizer.Add(self.gate)
+        self.gatesBoxSizer.Add(self.gateForm)
 
         self.mainSizer.Add(self.gatesBoxSizer,1, wx.EXPAND)
 
         ## ELECTRONS
         electronSizer = wx.BoxSizer(wx.HORIZONTAL)
         electronText = wx.StaticText(self.panel, label="Number of electrons:   ")
-        electronCombo = wx.ComboBox(self.panel, value="", choices=("1 electron", "2 electrons"))
+        electronCombo = wx.ComboBox(self.panel, value="", choices=("1", "2"))
         electronSizer.Add(electronText)
         electronSizer.Add(electronCombo)
 
