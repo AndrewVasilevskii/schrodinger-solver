@@ -6,8 +6,8 @@ from settingssizer import SettingsSizer, ChoiceMode
 
 class MainFrame(wx.Frame):
 
-    def __init__(self, *args, **kw):
-        super().__init__(*args, **kw)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         icon = wx.Icon('bitmaps/icon.ico', wx.BITMAP_TYPE_ICO)
         self.SetIcon(icon)
@@ -26,24 +26,7 @@ class MainFrame(wx.Frame):
         self.canvasSizer = canvasSizer = wx.BoxSizer(wx.VERTICAL)
         self.canvasPanel.SetSizer(canvasSizer)
         canvasSizer.Add(canvas, 1, wx.SHAPED)
-        self.textField = wx.TextCtrl(canvasPanel, style=wx.TE_PROCESS_ENTER, size=(150, -1))
-        self.textField.Bind(wx.EVT_TEXT_ENTER, self.textEnter)
-        self.clearBut = wx.Button(canvasPanel, label="With params", size=(90, -1))
-        self.clearBut.Bind(wx.EVT_BUTTON, self.onClear)
-        tempSizer = wx.BoxSizer(wx.HORIZONTAL)
-        tempSizer.AddSpacer(10)
-        tempSizer.Add(self.textField)
-        tempSizer.AddSpacer(10)
-        tempSizer.Add(self.clearBut)
 
-        from settingssizer import SettingsSizer
-        setSizer = SettingsSizer(parent=canvasPanel, label="BOX", choices=("box1", "box2","box3", "box4","box5", "box6"), size=(6,1), orient=wx.HORIZONTAL)
-        setSizer.SetMaxSelectionNumber(3)
-        setSizer.SetSelectionMode(ChoiceMode.notMoreThan)
-        tempSizer.Add(setSizer)
-
-        canvasSizer.AddSpacer(4)
-        canvasSizer.Add(tempSizer)
         canvasSizer.AddSpacer(4)
 
         self.scrollPan = MessagesPanel(splitterWindow, style=wx.SUNKEN_BORDER)
@@ -118,10 +101,6 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onExit, quitButton)
         #
         self.modelMenu = modelMenu = wx.Menu()
-        modelMenu.AppendSeparator()
-        test = wx.MenuItem(text='Test', id=1543)
-        modelMenu.Append(test)
-        self.Bind(wx.EVT_MENU, self.onModel, test)
         self.solveMenu = solveMenu = wx.Menu()
         solveMenu.AppendSeparator()
         self.canvasMenu = canvasMenu = wx.Menu()
@@ -137,15 +116,21 @@ class MainFrame(wx.Frame):
         helpMenu.AppendSeparator()
         self.Bind(wx.EVT_MENU, self.onAbout, aboutButton)
 
+
+        # Chat menu
+        self.chat = chat = wx.Menu()
+
         # Gathering menu
         self.topMenuBar.Append(fileMenu, 'File')
         self.topMenuBar.Append(modelMenu, '&Model')
         self.topMenuBar.Append(solveMenu, '&Solve')
         self.topMenuBar.Append(canvasMenu, '&Canvas')
         self.topMenuBar.Append(helpMenu, '&Help')
+        self.topMenuBar.Append(chat, '&Chat')
 
         self.SetMenuBar(self.topMenuBar)
         self.Bind(wx.EVT_CLOSE, self.onExit)
+        self.Bind(wx.EVT_MENU_OPEN, self.onMenuOpen)
 
     def onScreenshot(self, event):
         print("SCREENSHOT")
@@ -160,16 +145,22 @@ class MainFrame(wx.Frame):
         import sys
         sys.exit()
 
-    def onModel(self, event):
+    def onModel(self):
         from settings import Settings
-        Settings(None ,size=(350,200)).Show()
+        Settings(None ,size=(280,350)).Show()
 
     def onAbout(self, event):
         message = 'Program for a university project.\nBy Andrew Vasilevskii.'
         wx.MessageBox(message, 'About', wx.OK | wx.ICON_ASTERISK)
 
-    def textEnter(self, event):
-        self.scrollPan.Add(message=self.textField.GetValue())
+    def onMenuOpen(self, event):
+        selectedMenu = event.GetMenu()
+        if selectedMenu == self.chat:
+            self.onChat()
+        if selectedMenu == self.modelMenu:
+            self.onModel()
 
-    def onClear(self, event):
-        self.scrollPan.Add(self.textField.GetValue(), True)
+    def onChat(self):
+        import chat
+        chatFrame = chat.Chat(self, messagePanel=self.scrollPan, size=(280,50))
+        chatFrame.Show()
