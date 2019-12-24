@@ -1,125 +1,156 @@
 import wx
-import attributedTextField as atf
-import settingssizer as SS
+from customWx import settingssizer as SS
+from customWx import radioBox as rb
+from modelParameters import *
+class Settings(wx.Dialog):
 
-class Settings(wx.Frame):
-
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args,model=None, **kwargs):
         super().__init__(*args, **kwargs)
+        self.CenterOnParent()
+        self.parent = args[0]
+        self.SetFocus()
+        self.panelSizer = wx.BoxSizer(wx.VERTICAL)
 
         self.panel = wx.Panel(self)
         self.horizonalMainSizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.mainSizer = wx.BoxSizer(wx.VERTICAL)
+        self.leftVerticalSizer = wx.BoxSizer(wx.VERTICAL)
+        self.leftVerticalSizer.AddSpacer(5)
+        self.rightVerticalSizer = wx.BoxSizer(wx.VERTICAL)
+        self.rightVerticalSizer.AddSpacer(5)
 
         ## DONORS
-        # self.donorSizer = SS.SettingsSizer(self.panel, label="Number of donors: ", size=(3, 1),
-        #                               choices=range(3))
-        self.donorSizer = wx.RadioBox(self.panel, label="Number of donors: ", choices=("0", "1", "2"))
-        self.mainSizer.Add(self.donorSizer)
+        self.donorsBox = wx.StaticBox(self.panel, label="Donors: ")
+        self.donorsBoxSizer = wx.StaticBoxSizer(self.donorsBox)
+        self.donors = rb.RadioBox(self.panel, label="Number: ", size=(1,3), choices=range(3))
+        self.Bind(rb.EVT_RADIOBOX, self.onDonor, self.donors)
+        self.donors.create()
+        self.donorsBoxSizer.Add(self.donors)
+
+        self.rightVerticalSizer.Add(self.donorsBoxSizer)
+        self.rightVerticalSizer.AddSpacer(30)
 
         ## GATES
         self.gatesBox = wx.StaticBox(self.panel, label="Gates: ")
         self.gatesBoxSizer = wx.StaticBoxSizer(self.gatesBox, wx.HORIZONTAL)
-        self.gate = SS.SettingsSizer(self.panel, label="Number: ", size=(1,4), choices=range(4))
-        # self.gate = wx.RadioBox(self.panel, label="Number: ", choices=("0", "1", "2", "3"), style=wx.RA_SPECIFY_ROWS | wx.ALIGN_LEFT)
-        # self.gateForm = SS.SettingsSizer(self.panel, label="Form: ", size=(1,3), choices=("disc", "strip", "rectangle"))
-        self.gateForm = wx.RadioBox(self.panel, label="Form: ", choices=("disc", "strip", "rectangle"), style=wx.RA_SPECIFY_ROWS)
-        self.gatesBoxSizer.Add(self.gate)
-        self.gatesBoxSizer.Add(self.gateForm)
+        self.gates = rb.RadioBox(self.panel, label="Number: " , size=(1,4), choices=range(4))
+        self.Bind(rb.EVT_RADIOBOX, self.onGate, self.gates)
+        self.gates.create()
+        self.gateShape = rb.RadioBox(self.panel, label="Shape: ", size=(1,3), choices=("Disc", "Strip", "Rectangle"))
+        self.gateShape.create()
+        self.gatesBoxSizer.Add(self.gates)
+        self.gatesBoxSizer.Add(self.gateShape)
 
-        self.mainSizer.Add(self.gatesBoxSizer,1, wx.EXPAND)
+        self.leftVerticalSizer.Add(self.gatesBoxSizer,1, wx.EXPAND)
 
         ## ELECTRONS
         electronSizer = wx.BoxSizer(wx.HORIZONTAL)
         electronText = wx.StaticText(self.panel, label="Number of electrons:   ")
-        electronCombo = wx.ComboBox(self.panel, value="", choices=("1", "2"))
-        electronSizer.Add(electronText)
-        electronSizer.Add(electronCombo)
+        self.electrons = wx.ComboBox(self.panel, value="", choices=("1", "2"))
+        electronSizer.Add(electronText, 1, wx.ALIGN_CENTER_VERTICAL)
+        electronSizer.Add(self.electrons)
 
-        self.mainSizer.Add(electronSizer)
+        self.leftVerticalSizer.Add(electronSizer)
 
         ## GROUNDED SHIELD
-        checkBox = wx.CheckBox(self.panel, label="Enable Grounded Shield")
-        self.mainSizer.Add(checkBox)
-        self.mainSizer.AddSpacer(10)
+        self.groundedShield = wx.CheckBox(self.panel, label="Enable Grounded Shield")
+        self.leftVerticalSizer.Add(self.groundedShield)
+        self.leftVerticalSizer.AddSpacer(10)
+
+        ### OK BUTTON
+        okButton = wx.Button(self.panel, label="Ok")
+        okButton.SetBackgroundColour(wx.Colour(0,124,224))
+        okButton.Bind(wx.EVT_BUTTON, self.onOk)
+        self.rightVerticalSizer.Add(okButton, 0, wx.ALIGN_RIGHT)
+        self.rightVerticalSizer.AddSpacer(5)
+
+        ### CANCEL BUTTON
+        cancelButton = wx.Button(self.panel, label="Cancel")
+        cancelButton.Bind(wx.EVT_BUTTON, self.onClose)
+        self.rightVerticalSizer.Add(cancelButton, 0, wx.ALIGN_RIGHT)
+
+        ## RULE MESSAGE PANEL
+        self.rulePanel = wx.Panel(self, style=wx.SUNKEN_BORDER)
+        ruleText = wx.StaticText(self.rulePanel)
+        ruleText.SetLabelMarkup("<small><span color='rgb(195,0,0)'>"
+                                "* 0 donors and 0 gates impossible\n"
+                                "* with 0 gates, the gate shape is not used\n"
+                                "* with 0 donors, the 'Strip' shape is not available\n"
+                                "* with 1 donor, the number of gates is not more than 1</span></small>")
+        ruleTextSizer = wx.BoxSizer()
+        ruleTextSizer.Add(ruleText)
+
+        self.rulePanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.rulePanelSizer.AddSpacer(10)
+        self.rulePanelSizer.Add(self.rulePanel, 1, wx.EXPAND)
+        self.rulePanelSizer.AddSpacer(10)
+
         ## Set window sizers with horizontal spacing
         self.horizonalMainSizer.AddSpacer(10)
-        self.horizonalMainSizer.Add(self.mainSizer)
+        self.horizonalMainSizer.Add(self.leftVerticalSizer)
+        self.horizonalMainSizer.AddSpacer(5)
+        self.horizonalMainSizer.Add(self.rightVerticalSizer)
+
         self.panel.SetSizer(self.horizonalMainSizer)
-        # self.panel = wx.Panel(self)
-        # self.mainSizer = mainSizer = wx.BoxSizer(wx.HORIZONTAL)
-        # self.panel.SetSizer(mainSizer)
-        # mainSizerr = wx.BoxSizer(wx.VERTICAL)
-        # # self.donorBox = wx.StaticBox(self.panel, label="Number of donors: ")
-        # # self.donorBoxSizer = wx.StaticBoxSizer(self.donorBox)
-        # self.donor = SS.SettingsSizer(self.panel, label="Number of donors: ", size=(1,3), choices=("0 donors", "1 donor", "2 donors"))
-        # self.gate = SS.SettingsSizer(self.panel, label="Number of gates: ", size=(1,4), choices=("0 gates", "1 gate", "2 gates", "3 gates"))
-        # self.gateForm = SS.SettingsSizer(self.panel, label="Gate form: ", size=(1,3), choices=("disc", "strip", "rectangle"))
-        # self.electron = SS.SettingsSizer(self.panel , label="Number of electrons: ", size=(1,2), choices=("1 electron", "2 electrons"))
-        # self.groundedShield= SS.SettingsSizer(self.panel, label="Presence of grounded shield: ", size=(1,2), choices=("yes","missing"))
-        #
-        # # self.donorBoxSizer.Add(self.donor)
-        # mainSizerr.Add(self.donor)
-        # mainSizerr.Add(self.gate)
-        # mainSizerr.Add(self.gateForm)
-        # mainSizerr.Add(self.electron)
-        # mainSizerr.Add(self.groundedShield)
-        #
-        # mainSizer.Add(mainSizerr)
-        # comboSizer = wx.BoxSizer(wx.VERTICAL)
-        # mainSizer.AddSpacer(50)
-        # mainSizer.Add(comboSizer)
-        #
-        # donorSizer = wx.BoxSizer(wx.HORIZONTAL)
-        # donorText = wx.StaticText(self.panel, label="Number of donors:  ")
-        # donorCombo = wx.Choice(self.panel,choices=("0 donors", "1 donor", "2 donors"))
-        # donorSizer.Add(donorText)
-        # donorSizer.Add(donorCombo)
-        # print(donorCombo.Items)
-        #
-        # gateSizer = wx.BoxSizer(wx.HORIZONTAL)
-        # gateText = wx.StaticText(self.panel, label="Number of gates:  ")
-        # gateCombo = wx.ComboBox(self.panel, value="", choices=("0 gates", "1 gate", "2 gates", "3 gates"))
-        # gateSizer.Add(gateText)
-        # gateSizer.Add(gateCombo)
-        # print(gateCombo.Items)
-        #
-        # gateFormSizer = wx.BoxSizer(wx.HORIZONTAL)
-        # gateFormText = wx.StaticText(self.panel, label="Gate form:  ")
-        # gateFormCombo = wx.ComboBox(self.panel, value="", choices=("disc", "strip", "rectangle"))
-        # gateFormSizer.Add(gateFormText)
-        # gateFormSizer.Add(gateFormCombo)
-        #
-        # electronSizer = wx.BoxSizer(wx.HORIZONTAL)
-        # electronText = wx.StaticText(self.panel, label="Number of electrons:   ")
-        # electronCombo = wx.ComboBox(self.panel, value="", choices=("1 electron", "2 electrons"))
-        # electronSizer.Add(electronText)
-        # electronSizer.Add(electronCombo)
-        #
-        # shieldSizer = wx.BoxSizer(wx.HORIZONTAL)
-        # shieldText = wx.StaticText(self.panel, label="Presence of grounded shield:   ")
-        # shieldCombo = wx.ComboBox(self.panel, value="", choices=("yes", "missing"))
-        # shieldSizer.Add(shieldText)
-        # shieldSizer.Add(shieldCombo)
-        #
-        # comboSizer.Add(donorSizer)
-        # comboSizer.Add(gateSizer)
-        # comboSizer.Add(gateFormSizer)
-        # comboSizer.Add(electronSizer)
-        # comboSizer.Add(shieldSizer)
-        #
-        # self.gateDiameterPickerBox = wx.StaticBox(self.panel, label="--(Gate diameter)--: ")
-        # self.gateDiameterPickerSizer = wx.StaticBoxSizer(self.gateDiameterPickerBox, wx.HORIZONTAL)
-        # self.gateDiameterPicker = wx.SpinCtrlDouble(self.panel, min=0.1, initial=0.1, inc=0.1)
-        # self.gateDiameterPickerSizer.Add(self.gateDiameterPicker)
-        # k_super = atf.AttributedTextField(self.panel, baseText="t", indexText="01", indexStyle=atf.IndexStyle.super)
-        # k_sub = atf.AttributedTextField(self.panel, baseText="t", indexText="01", indexStyle=atf.IndexStyle.sub)
-        # k_none = atf.AttributedTextField(self.panel, baseText="t")
-        # self.gateDiameterPickerSizer.Add(k_super)
-        # self.gateDiameterPickerSizer.AddSpacer(4)
-        # self.gateDiameterPickerSizer.Add(k_sub)
-        # self.gateDiameterPickerSizer.AddSpacer(4)
-        # self.gateDiameterPickerSizer.Add(k_none)
-        #
-        #
-        # mainSizer.Add(self.gateDiameterPickerSizer)
+        self.rulePanel.SetSizer(ruleTextSizer)
+
+        self.panelSizer.Add(self.panel)
+        self.panelSizer.AddSpacer(15)
+        self.panelSizer.Add(self.rulePanelSizer)
+
+        self.SetSizer(self.panelSizer)
+        self.setupModel(model)
+
+    def onOk(self, event=None):
+        donorNumber = self.donors.GetSelection()
+        gateNumber = self.gates.GetSelection()
+        gateShape = self.gateShape.GetSelection()
+        electronNumberIndex = self.electrons.GetSelection()
+        groundedShield = self.groundedShield.GetValue()
+        model = Model(DonorNumber(donorNumber), GateNumber(gateNumber), GateShape(gateShape), Electron(electronNumberIndex), GroundedShield(groundedShield))
+        self.parent.currentModell(model)
+        self.EndModal(0)
+
+    def onClose(self, event):
+        self.Close()
+
+    def onDonor(self, event):
+        self.__ruleManager("donor", event.GetValue())
+
+    def onGate(self, event):
+        self.__ruleManager("gate", event.GetValue())
+
+    def __ruleManager(self, box, value):
+        if box == "donor":
+            if value == "0":
+                self.gates.Enable(True)
+                self.gates.EnableItem(0, False)
+                self.gateShape.EnableItem(1, False)
+            else:
+                if value == "1":
+                    self.gates.Enable(True)
+                    self.gates.EnableItem(2, False)
+                    self.gates.EnableItem(3, False)
+                    if self.gates.GetSelectionIndex() > 1:
+                        self.gates.SetSelection(1)
+                else:
+                    self.gates.Enable(True)
+                if self.gateShape.IsItemEnabled(0):
+                    self.gateShape.EnableItem(1, True)
+        elif box == "gate":
+            if value == "0":
+                self.donors.EnableItem(0, False)
+                self.gateShape.Enable(False)
+            else:
+                self.donors.EnableItem(0, True)
+                if self.donors.GetSelection() == "0":
+                    self.gateShape.EnableItem(0, True)
+                    self.gateShape.EnableItem(2, True)
+                else:
+                    self.gateShape.Enable(True)
+
+    def setupModel(self, model:Model):
+        self.donors.SetSelectionByName(model.donorNumber)
+        self.gates.SetSelectionByName(model.gateNumber)
+        self.gateShape.SetSelectionByName(model.gateShape)
+        self.electrons.SetSelection(model.electronNumberIndex)
+        self.groundedShield.SetValue(model.groundedShield)

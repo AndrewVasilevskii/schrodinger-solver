@@ -1,11 +1,11 @@
 import wx
-from messagesPanel import MessagesPanel
+from customWx.messagesPanel import MessagesPanel
 from canvas import Canvas
-from settingssizer import SettingsSizer, ChoiceMode
-
+from modelParameters import Model
 
 class MainFrame(wx.Frame):
 
+    currentModel = Model()
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -19,7 +19,7 @@ class MainFrame(wx.Frame):
         mainSizer.Add(splitterWindow, 1, wx.EXPAND, 0)
         self.SetSizer(mainSizer)
 
-        self.canvasPanel = canvasPanel = wx.Panel(splitterWindow, style=wx.SUNKEN_BORDER)
+        self.canvasPanel = canvasPanel = wx.Panel(splitterWindow, )
         # self.canvasPanel.SetBackgroundColour(wx.RED)
         canvasPanel.SetMinSize((450, 450))
         self.canvas = canvas = Canvas(canvasPanel, -1)
@@ -116,7 +116,6 @@ class MainFrame(wx.Frame):
         helpMenu.AppendSeparator()
         self.Bind(wx.EVT_MENU, self.onAbout, aboutButton)
 
-
         # Chat menu
         self.chat = chat = wx.Menu()
 
@@ -147,7 +146,9 @@ class MainFrame(wx.Frame):
 
     def onModel(self):
         from settings import Settings
-        Settings(None ,size=(280,350)).Show()
+        with Settings(self, model=self.currentModel, style= wx.CLOSE_BOX, size=(340,330)) as dia:
+            dia.ShowModal()
+
 
     def onAbout(self, event):
         message = 'Program for a university project.\nBy Andrew Vasilevskii.'
@@ -161,6 +162,11 @@ class MainFrame(wx.Frame):
             self.onModel()
 
     def onChat(self):
-        import chat
-        chatFrame = chat.Chat(self, messagePanel=self.scrollPan, size=(280,50))
+        from customWx.TEMP import chat
+        chatFrame = chat.Chat(self, messagePanel=self.scrollPan, size=(280, 50))
         chatFrame.Show()
+
+    def currentModell(self, model):
+        self.currentModel = model
+        print(model)
+        print(model.ModelName)

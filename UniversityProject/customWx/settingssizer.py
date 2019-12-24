@@ -70,7 +70,7 @@ class SettingsSizer(wx.StaticBoxSizer):
                 currentCell = row * columnNumber + column
                 if currentCell >= len(self.choices):
                     break
-                checkBox = wx.RadioButton(self.panel, label=str(self.choices[currentCell]))
+                checkBox = wx.CheckBox(self.panel, label=str(self.choices[currentCell]))
                 self.checkBoxes.append(checkBox)
                 checkBox.Bind(wx.EVT_CHECKBOX, self.__onCheck)
                 boxSizer.Add(checkBox)

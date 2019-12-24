@@ -4,6 +4,7 @@ from mainFrame import MainFrame
 import multiprocessing
 
 if __name__ == '__main__':
+    import wx.lib.inspection
 
     multiprocessing.freeze_support()
     app = wx.App()
@@ -12,6 +13,7 @@ if __name__ == '__main__':
     pos = wx.Point(100, 100)
     frame = MainFrame(None, title='University work', size=size, pos=pos, style=wx.DEFAULT_FRAME_STYLE )
     frame.Show()
+    # wx.lib.inspection.InspectionTool().Show()
     app.MainLoop()
 
 # import sys
