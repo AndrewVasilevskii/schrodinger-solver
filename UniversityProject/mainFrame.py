@@ -1,7 +1,7 @@
 import wx
 from customWx.messagesPanel import MessagesPanel
 from canvas import Canvas
-from modelParameters import Model
+from model import Model
 
 class MainFrame(wx.Frame):
 
@@ -145,10 +145,16 @@ class MainFrame(wx.Frame):
         sys.exit()
 
     def onModel(self):
-        from settings import Settings
-        with Settings(self, model=self.currentModel, style= wx.CLOSE_BOX, size=(340,330)) as dia:
+        from settingsModel import SettingsModel
+        print(self.currentModel.parameters)
+        with SettingsModel(self, model=self.currentModel, style=wx.CLOSE_BOX, size=(340,330)) as dia:
             dia.ShowModal()
+        print(self.currentModel.parameters)
 
+    def onSolve(self):
+        from settingsModelParameters import SettingsModelParameters
+        with SettingsModelParameters(self, model=self.currentModel, style=wx.CLOSE_BOX, size=(560,270)) as dia:
+            dia.ShowModal()
 
     def onAbout(self, event):
         message = 'Program for a university project.\nBy Andrew Vasilevskii.'
@@ -160,6 +166,8 @@ class MainFrame(wx.Frame):
             self.onChat()
         if selectedMenu == self.modelMenu:
             self.onModel()
+        if selectedMenu == self.solveMenu:
+            self.onSolve()
 
     def onChat(self):
         from customWx.TEMP import chat

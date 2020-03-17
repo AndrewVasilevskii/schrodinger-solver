@@ -26,8 +26,7 @@ class AttributedTextField(rt.RichTextCtrl):
 
 
         size = self.getTextSize()
-        style = wx.TE_READONLY | wx.NO_BORDER
-        super().__init__(self.parent, size=size, style=style)
+        super().__init__(self.parent, size=size, style=wx.NO_BORDER)
         self.SetFont(self.baseFont)
         self.setIndex()
         self.EnableVerticalScrollbar(False)

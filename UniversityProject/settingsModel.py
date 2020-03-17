@@ -1,11 +1,16 @@
 import wx
-from customWx import settingssizer as SS
 from customWx import radioBox as rb
-from modelParameters import *
-class Settings(wx.Dialog):
+from model import *
 
-    def __init__(self, *args,model=None, **kwargs):
+class SettingsModel(wx.Dialog):
+
+    currentModel: Model = None
+    innerModel: Model = None
+
+    def __init__(self, *args, model=None, **kwargs):
         super().__init__(*args, **kwargs)
+        self.currentModel = model
+
         self.CenterOnParent()
         self.parent = args[0]
         self.SetFocus()
@@ -42,6 +47,9 @@ class Settings(wx.Dialog):
 
         self.leftVerticalSizer.Add(self.gatesBoxSizer,1, wx.EXPAND)
 
+
+        electronShieldGrid = wx.FlexGridSizer(rows=2, cols=1, vgap=2, hgap=0)
+
         ## ELECTRONS
         electronSizer = wx.BoxSizer(wx.HORIZONTAL)
         electronText = wx.StaticText(self.panel, label="Number of electrons:   ")
@@ -49,25 +57,28 @@ class Settings(wx.Dialog):
         electronSizer.Add(electronText, 1, wx.ALIGN_CENTER_VERTICAL)
         electronSizer.Add(self.electrons)
 
-        self.leftVerticalSizer.Add(electronSizer)
+        electronShieldGrid.Add(electronSizer)
 
         ## GROUNDED SHIELD
         self.groundedShield = wx.CheckBox(self.panel, label="Enable Grounded Shield")
-        self.leftVerticalSizer.Add(self.groundedShield)
-        self.leftVerticalSizer.AddSpacer(10)
+        electronShieldGrid.Add(self.groundedShield)
+        self.leftVerticalSizer.Add(electronShieldGrid)
+        self.leftVerticalSizer.AddSpacer(5)
+
+
+        buttonsGrid = wx.FlexGridSizer(rows=2, cols=1, hgap=0, vgap=5)
 
         ### OK BUTTON
         okButton = wx.Button(self.panel, label="Ok")
         okButton.SetBackgroundColour(wx.Colour(0,124,224))
         okButton.Bind(wx.EVT_BUTTON, self.onOk)
-        self.rightVerticalSizer.Add(okButton, 0, wx.ALIGN_RIGHT)
-        self.rightVerticalSizer.AddSpacer(5)
+        buttonsGrid.Add(okButton)
 
         ### CANCEL BUTTON
         cancelButton = wx.Button(self.panel, label="Cancel")
         cancelButton.Bind(wx.EVT_BUTTON, self.onClose)
-        self.rightVerticalSizer.Add(cancelButton, 0, wx.ALIGN_RIGHT)
-
+        buttonsGrid.Add(cancelButton)
+        self.rightVerticalSizer.Add(buttonsGrid, 0, wx.ALIGN_RIGHT)
         ## RULE MESSAGE PANEL
         self.rulePanel = wx.Panel(self, style=wx.SUNKEN_BORDER)
         ruleText = wx.StaticText(self.rulePanel)
@@ -106,8 +117,11 @@ class Settings(wx.Dialog):
         gateShape = self.gateShape.GetSelection()
         electronNumberIndex = self.electrons.GetSelection()
         groundedShield = self.groundedShield.GetValue()
-        model = Model(DonorNumber(donorNumber), GateNumber(gateNumber), GateShape(gateShape), Electron(electronNumberIndex), GroundedShield(groundedShield))
-        self.parent.currentModell(model)
+        self.innerModel = Model(DonorNumber(donorNumber), GateNumber(gateNumber), GateShape(gateShape), Electron(electronNumberIndex), GroundedShield(groundedShield))
+        if self.innerModel == self.currentModel:
+            self.parent.currentModell(self.currentModel)
+        else:
+            self.parent.currentModell(self.innerModel)
         self.EndModal(0)
 
     def onClose(self, event):

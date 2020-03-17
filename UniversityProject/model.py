@@ -1,5 +1,5 @@
-from enum import Enum, IntEnum
-
+from enum import Enum
+from modelWithParameters import ModelWithParameters
 class DonorNumber(Enum):
     zeroDonors = "0"
     oneDonor = "1"
@@ -28,6 +28,7 @@ class GroundedShield(Enum):
     disabledShield = False
 
 class Model:
+    parameters = ModelWithParameters()
     def __init__(self,
                  donorNumber: DonorNumber = DonorNumber.zeroDonors,
                  gateNumber: GateNumber = GateNumber.oneGate,
@@ -49,6 +50,16 @@ class Model:
                f"Number of electrons: {self.electronNumber}\n" \
                f"Grounded shield enabled: {self.groundedShield}"
 
+    def __eq__(self, other):
+        if self.donorNumber == other.donorNumber and\
+            self.gateNumber == other.gateNumber and\
+            self.gateShape == other.gateShape and\
+            self.electronNumber == other.electronNumber and\
+            self.electronNumberIndex == other.electronNumberIndex and\
+            self.groundedShield == other.groundedShield:
+            return True
+        else:
+            return False
 
     @property
     def ModelName(self):
